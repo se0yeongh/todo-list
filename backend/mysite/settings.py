@@ -25,7 +25,7 @@ SECRET_KEY = '*8%=d)8$23a7l(m*)2-upxvztaxj%)7qt#8a3z7e#_bupf2w5g'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = ['my-todo-backend-hchrc0hbbxhrh4c8.canadacentral-01.azurewebsites.net']
 
 
 # Application definition
@@ -79,19 +79,35 @@ WSGI_APPLICATION = 'mysite.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/2.0/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'postgres',
-        'User': 'yeonghong.seo',
-        'PASSWORD': 'wasd1234',
-        'HOST': '127.0.0.1',
-        'PORT': '5432',
-        'OPTIONS': {
-            'options': '-c timezone=UTC',  # 반드시 소문자 options와 timezone=UTC 확인
-        },
+# Azure 환경이면 PostgreSQL, 아니면 SQLite 사용
+if 'AZURE_POSTGRES_HOST' in os.environ:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql',
+            'NAME': os.environ['AZURE_POSTGRES_DB'],
+            'USER': os.environ['AZURE_POSTGRES_USER'],
+            'PASSWORD': os.environ['AZURE_POSTGRES_PASSWORD'],
+            'HOST': os.environ['AZURE_POSTGRES_HOST'],
+            'PORT': '5432',
+            'OPTIONS': {
+                'options': '-c timezone=UTC',  # 반드시 소문자 options와 timezone=UTC 확인
+            },
+        }
     }
-}
+else:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql',
+            'NAME': 'postgres',
+            'User': 'yeonghong.seo',
+            'PASSWORD': 'wasd1234',
+            'HOST': '127.0.0.1',
+            'PORT': '5432',
+            'OPTIONS': {
+                'options': '-c timezone=UTC',  # 반드시 소문자 options와 timezone=UTC 확인
+            },
+        }
+    }
 
 
 # Password validation
